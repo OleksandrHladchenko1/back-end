@@ -6,16 +6,17 @@ const MySQLService = require('../services/MySQL');
 
 module.exports = () => {
   const mySQLService = new MySQLService();
+
   router.post('/register', async (req, res) => {
       const { email } = req.body;
       let user = await mySQLService.findUser(email);
       
       if (user) {
-        res.status(400).json();
+        res.status(400).json({ success: 0, message: 'User with this email already exists' });
       } else {
         await mySQLService.registerUser(req.body);
 
-        res.status(201).json();
+        res.status(201).json({ success: 1, message: 'Successful registration!' });
       }
     }
   );
@@ -24,11 +25,13 @@ module.exports = () => {
       const user = await mySQLService.findUser(email);
 
       if (!user) {
-        return res.status(400).json();
+        return res.status(400).json({ success: 0, message: 'User not found' });
       }
 
-      if (!bcrypt.compare(password, user.password)) {
-        return res.status(400).json();
+      const result = await bcrypt.compare(password, user.password);
+
+      if (!result) {
+        return res.status(400).json({ success: 0, message: 'Wrong password' });
       }
 
       const token = jwt.sign(

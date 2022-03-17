@@ -11,7 +11,7 @@ class MySQL {
       host: 'localhost',
       port: 3306,
       user: 'root',
-      password: 'Superalexworld2020',
+      password: 'Superalexworld2018',
       database: 'sto',
     });
 
@@ -55,14 +55,103 @@ class MySQL {
       console.log(err);
     }
   }
-  
-  findTask = async (title) => {
+
+  findUserVisits = async (userId, status) => {
     await this.connect();
-    const sql = "SELECT * FROM task WHERE title = ?";
-    const values = [[title]];
+    const sql = 'SELECT * FROM user_visit WHERE id_user = ? AND status = ?';
+    const values = [userId, status];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  createUserVisit = async (userId, visit) => {
+    await this.connect();
+    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status) VALUES ?';
+    const values = [[userId, visit.dateOfVisit, 'Planned']];
     try {
       const result = await this.connection.query(sql, [values]);
-      return result[0][0];
+      console.log(result);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getVisitById = async (id) => {
+    await this.connect();
+    const sql = 'SELECT user_visit.dateOfVisit, user_visit.status, user.phoneNumber, user.firstName, user.lastName, user.fatherName, user.dateOfBirth, user.discount, user.email ' +
+                'FROM user_visit, user ' +
+                'WHERE user_visit.id_user = user.id AND user_visit.id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  changeVisitStatus = async (id, status) => {
+    await this.connect();
+    const sql = 'UPDATE user_visit SET status = ? WHERE id = ?';
+    const values = [status, id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  findUserCars = async (userId) => {
+    await this.connect();
+    const sql = 'SELECT * FROM user_car WHERE id_user = ?';
+    const values = [userId];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  addUserCar = async (car) => {
+    await this.connect();
+    const sql = 'INSERT INTO user_car (id_user, model, name, year, carcas, color) VALUES ?';
+    const values = [[
+      car.userId,
+      car.model,
+      car.name,
+      car.year,
+      car.carcas,
+      car.color,
+    ]];
+    try {
+      const result = await this.connection.query(sql, [values]);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  updateUserCar = async (carId, car) => {
+    await this.connect();
+    const sql = 'UPDATE user_car SET model = ?, name = ?, year = ?, carcas = ?, color = ? WHERE id = ?';
+    const values = [[
+      car.model,
+      car.name,
+      car.year,
+      car.carcas,
+      car.color,
+      carId,
+    ]];
+    try {
+      const result = await this.connection.query(sql, ...values);
+      return result;
     } catch(err) {
       console.log(err);
     }
