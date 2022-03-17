@@ -56,6 +56,18 @@ class MySQL {
     }
   }
 
+  changePassword = async (email, password) => {
+    await this.connect();
+    const sql = 'UPDATE user SET password = ? WHERE email = ?';
+    const values = [password, email];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   findUserVisits = async (userId, status) => {
     await this.connect();
     const sql = 'SELECT * FROM user_visit WHERE id_user = ? AND status = ?';
@@ -151,6 +163,116 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, ...values);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  deleteUserCar = async (id) => {
+    await this.connect();
+    const sql = 'DELETE FROM user_car WHERE id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  createWorker = async (worker) => {
+    await this.connect();
+    const sql = 'INSERT INTO worker (phoneNumber, firstName, lastName, fatherName) VALUES ?';
+    const values = [[
+      worker.phoneNumber,
+      worker.firstName,
+      worker.lastName,
+      worker.fatherName,
+    ]];
+    try {
+      const result = await this.connection.query(sql, [values]);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  deleteWorker = async (id) => {
+    await this.connect();
+    const sql = 'DELETE FROM worker WHERE id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getWorkers = async () => {
+    await this.connect();
+    const sql = 'SELECT * FROM worker';
+    try {
+      const result = await this.connection.query(sql);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getWorkersById = async (id) => {
+    await this.connect();
+    const sql = 'SELECT * FROM worker WHERE id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0][0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getFullWorkersInfo = async () => {
+    await this.connect();
+    const sql = 'SELECT worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
+                'FROM worker, specialist, speciality ' +
+                'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id';
+    try {
+      const result = await this.connection.query(sql);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getFullWorkerInfoById = async (id) => {
+    await this.connect();
+    const sql = 'SELECT worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
+                'FROM worker, specialist, speciality ' +
+                'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id AND worker.id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  editWorker = async (worker, id) => {
+    await this.connect();
+    const sql = 'UPDATE worker SET phoneNumber = ?, firstName = ?, lastName = ?, fatherName = ? WHERE id = ?';
+    const values = [[
+      worker.phoneNumber,
+      worker.firstName,
+      worker.lastName,
+      worker.fatherName,
+      id,
+    ]];
+    try {
+      const result = await this.connection.query(sql, ...values);
+      console.log(result);
       return result;
     } catch(err) {
       console.log(err);

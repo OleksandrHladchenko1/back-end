@@ -38,5 +38,16 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successful updated car' });
   });
 
+  router.delete('/deleteUserCar/:carId', async (req, res) => {
+    const { carId } = req.params;
+    const result = await mySQLService.deleteUserCar(carId);
+
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error deleting' });
+    }
+
+    res.status(200).json({ success: 1, message: 'Successful deleted car' });
+  });
+
   return router;
 };

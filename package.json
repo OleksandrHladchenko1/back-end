@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/OleksandrHladchenko1/back-end#readme",
   "devDependencies": {
+    "eslint": "^8.11.0",
     "nodemon": "^2.0.15"
   },
   "dependencies": {
