@@ -18,7 +18,7 @@ module.exports = () => {
       } else {
         await mySQLService.registerUser(req.body);
 
-        res.status(201).json({ success: 1, message: 'Successful registration!' });
+        res.status(201).json({ success: 1, message: 'Successful registration!', email });
       }
     }
   );
@@ -33,7 +33,7 @@ module.exports = () => {
       const result = await bcrypt.compare(password, user.password);
 
       if (!result) {
-        return res.status(400).json({ success: 0, message: 'Wrong password' });
+        return res.status(401).json({ success: 0, message: 'Wrong password' });
       }
 
       const token = jwt.sign(

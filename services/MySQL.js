@@ -34,6 +34,27 @@ class MySQL {
     }
   }
 
+  getUserById = async (id) => {
+    await this.connect();
+    const sql = 'SELECT * FROM user WHERE id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return {
+        id: result[0][0].id,
+        phoneNumber: result[0][0].phoneNumber,
+        firstName: result[0][0].firstName,
+        lastName: result[0][0].lastName,
+        fatherName: result[0][0].fatherName,
+        dateOfBirth: result[0][0].dateOfBirth,
+        discount: result[0][0].discount,
+        email: result[0][0].email,
+      };
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   registerUser = async (body) => {
     await this.connect();
     const sql = "INSERT INTO user (phoneNumber, firstName, lastName, fatherName, dateOfBirth, discount, email, password) VALUES ?";
