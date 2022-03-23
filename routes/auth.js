@@ -67,6 +67,10 @@ module.exports = () => {
       res.status(400).json({ success: 0, message: 'New passwords are not equal' });
     }
 
+    if(oldPassword === newPassword1) {
+      res.status(400).json({ success: 0, message: 'Old and new password are equal' });
+    }
+
     const cryptedPassword = await bcrypt.hash(newPassword1, 10);
     
     await mySQLService.changePassword(email, cryptedPassword);
