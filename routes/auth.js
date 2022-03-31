@@ -39,7 +39,7 @@ module.exports = () => {
       const token = jwt.sign(
         { idUser: user.id },
         'JWT_SECRET', 
-        { expiresIn: '1h' }
+        { expiresIn: '10h' }
       );
 
       res.status(200).json({user: {
@@ -51,6 +51,11 @@ module.exports = () => {
 
   router.patch('/changePassword', checkToken, async (req, res) => {
     const { email, oldPassword, newPassword1, newPassword2 } = req.body;
+
+    if(oldPassword.trim() === '' || newPassword1.trim() === '' || newPassword2.trim() === '') {
+      res.status(400).json({ success: 0, message: 'Please, fill all the fields!' });
+    }
+
     const user = await mySQLService.findUser(email);
 
     if(!user) {

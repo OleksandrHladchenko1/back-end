@@ -89,10 +89,10 @@ class MySQL {
     }
   }
 
-  findUserVisits = async (userId, status) => {
+  findUserVisits = async (userId) => {
     await this.connect();
-    const sql = 'SELECT * FROM user_visit WHERE id_user = ? AND status = ?';
-    const values = [userId, status];
+    const sql = 'SELECT * FROM user_visit WHERE id_user = ?';
+    const values = [userId];
     try {
       const result = await this.connection.query(sql, values);
       return result[0];
