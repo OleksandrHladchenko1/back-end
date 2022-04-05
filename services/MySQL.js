@@ -34,6 +34,26 @@ class MySQL {
     }
   }
 
+  updateUserInfo = async (user) => {
+    await this.connect();
+    const sql = "UPDATE user SET phoneNumber = ?, firstName = ?, lastName = ?, fatherName = ?, dateOfBirth = ?, email = ? WHERE id = ?";
+    const values = [
+      user.phoneNumber,
+      user.firstName,
+      user.lastName,
+      user.fatherName,
+      user.dateOfBirth,
+      user.email,
+      user.id,
+    ];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   getUserById = async (id) => {
     await this.connect();
     const sql = 'SELECT * FROM user WHERE id = ?';
@@ -103,11 +123,11 @@ class MySQL {
 
   createUserVisit = async (userId, visit) => {
     await this.connect();
-    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status) VALUES ?';
-    const values = [[userId, visit.dateOfVisit, 'Planned']];
+    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status, comment) VALUES ?';
+    const values = [[userId, visit.dateOfVisit, 'Planned', visit.comment]];
     try {
       const result = await this.connection.query(sql, [values]);
-      console.log(result);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -154,7 +174,7 @@ class MySQL {
 
   addUserCar = async (car) => {
     await this.connect();
-    const sql = 'INSERT INTO user_car (id_user, model, name, year, carcas, color) VALUES ?';
+    const sql = 'INSERT INTO user_car (id_user, model, name, year, carcas, color, engine, number, transmission, engineNumber) VALUES ?';
     const values = [[
       car.userId,
       car.model,
@@ -162,6 +182,10 @@ class MySQL {
       car.year,
       car.carcas,
       car.color,
+      car.engine,
+      car.number,
+      car.transmission,
+      car.engineNumber,
     ]];
     try {
       const result = await this.connection.query(sql, [values]);

@@ -21,10 +21,10 @@ module.exports = () => {
     const result = await mySQLService.addUserCar(req.body);
 
     if(!result) {
-      res.status(400).json({ success: 0, message: 'Error adding' });
+      res.status(400).json({ success: 0, message: 'Error adding car' });
     }
 
-    res.status(200).json({ success: 1, message: 'Successful added car' });
+    res.status(200).json({ success: 1, message: 'Successfully added car' });
   });
 
   router.patch('/editUserCar/:carId', async (req, res) => {
