@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const bcrypt = require('bcrypt');
 
 const MySQLService = require('../services/MySQL');
 
@@ -6,13 +7,20 @@ module.exports = () => {
   const mySQLService = new MySQLService();
 
   router.post('/createWorker', async (req, res) => {
-    const result = await mySQLService.createWorker(req.body);
+      const { email, startStatus, password } = req.body;
+      let worker = await mySQLService.findUser(email, startStatus);
+      
+      if (worker) {
+        res.status(400).json({ success: 0, message: 'User with this email already exists' });
+      } else {
+        const cryptedPassword = await bcrypt.hash(password, 10);
+        const result = await mySQLService.createWorker({ ...req.body, password: cryptedPassword });
 
-    if(!result) {
-      res.status(400).json({ success: 0, message: 'Error creating workers' });
-    }
-
-    res.status(200).json({ success: 1,message: 'Worker was succefully created' });
+        if(!result) {
+          res.status(400).json({ success: 0, message: 'Error creating workers' });
+        }
+        res.status(200).json({ success: 1,message: 'Worker was succefully created' });
+      }
   });
 
   router.get('/getAllWorkers', async (req, res) => {
@@ -25,12 +33,12 @@ module.exports = () => {
     res.status(200).json({ success: 1, workers: result });
   });
 
-  router.get('/getWorkerById/:workerId', async (req, res) => {
-    const { workerId } = req.params;
-    const result = await mySQLService.getWorkersById(workerId);
+  router.get('/getWorkerById/:id', async (req, res) => {
+    const { id } = req.params;
+    const result = await mySQLService.getWorkersById(id);
 
     if(!result) {
-      res.status(400).json({ success: 0, message: 'Error getting worker by id' });
+      res.status(400).json({ success: 0, message: 'Error getting worker by email' });
     }
 
     res.status(200).json({ success: 1, worker: result });

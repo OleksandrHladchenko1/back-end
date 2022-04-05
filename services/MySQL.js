@@ -22,9 +22,10 @@ class MySQL {
     return this.connection.end();
   }
 
-  findUser = async (email) => {
+  findUser = async (email, startStatus) => {
+    let sql;
     await this.connect();
-    const sql = "SELECT * FROM user WHERE email = ?";
+    sql = startStatus === 'User' ? "SELECT * FROM user WHERE email = ?" : "SELECT * FROM worker WHERE email = ?";
     const values = [[email]];
     try {
       const result = await this.connection.query(sql, [values]);
@@ -228,12 +229,15 @@ class MySQL {
 
   createWorker = async (worker) => {
     await this.connect();
-    const sql = 'INSERT INTO worker (phoneNumber, firstName, lastName, fatherName) VALUES ?';
+    const sql = 'INSERT INTO worker (phoneNumber, firstName, lastName, fatherName, email, password, status) VALUES ?';
     const values = [[
       worker.phoneNumber,
       worker.firstName,
       worker.lastName,
       worker.fatherName,
+      worker.email,
+      worker.password,
+      worker.status,
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
