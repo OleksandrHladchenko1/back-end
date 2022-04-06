@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
+const GET_ISSUES_BY_VISIT_ID = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -105,6 +106,20 @@ class MySQL {
     try {
       const result = await this.connection.query(sql, values);
       return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  findAllVisits = async () => {
+    await this.connect();
+    const sql = "SELECT user_visit.id, user_visit.id_user, user_visit.dateOfVisit, user_visit.status, user_visit.comment, user.phoneNumber, user.firstName " +
+    "FROM user_visit, user " +
+    "WHERE user_visit.id_user = user.id";
+
+    try {
+      const result = await this.connection.query(sql);
+      return result[0];
     } catch(err) {
       console.log(err);
     }
@@ -328,56 +343,11 @@ class MySQL {
     }
   }
 
-  createTask = async (title, desctiption, idUser) => {
+  getIssuesByVisitId = async (id) => {
     await this.connect();
-    const sql = "INSERT INTO task (done, title, description, idUser) VALUES ?";
-    const values = [[0, title, desctiption, idUser]];
-    try {
-      await this.connection.query(sql, [values]);
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-  updateTaskDone = async (done, idUser, title) => {
-    await this.connect();
-    const sql = "UPDATE task SET done = ? WHERE idUser = ? AND title = ?";
-    const values = [[done], [idUser], [title]];
-    try {
-      await this.connection.query(sql, values);
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-  updateTaskTitle = async (newTitle, description, oldTitle, idUser) => {
-    await this.connect();
-    const sql = "UPDATE task SET title = ?, description = ? WHERE title = ? AND idUser = ?";
-    const values = [[newTitle], [description], [oldTitle], [idUser]];
-
-    try {
-      await this.connection.query(sql, values);
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-  deleteTask = async (title, idUser) => {
-    await this.connect();
-    const sql = "DELETE from task WHERE title = ? AND idUser = ?";
-    const values = [[title], [idUser]];
-
-    try {
-      await this.connection.query(sql, values);
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-  getUserTask = async (idUser, done) => {
-    await this.connect();
-    const sql = "SELECT title, done, description FROM task WHERE idUser = ? AND done = ?";
-    const values = [[idUser], [done]];
+    console.log(GET_ISSUES_BY_VISIT_ID);
+    const sql = GET_ISSUES_BY_VISIT_ID;
+    const values = [id];
     try {
       const result = await this.connection.query(sql, values);
       return result[0];

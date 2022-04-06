@@ -5,6 +5,16 @@ const MySQLService = require('../services/MySQL');
 module.exports = () => {
   const mySQLService = new MySQLService();
 
+  router.get('/allUserVisits', async (req, res) => {
+    const result = await mySQLService.findAllVisits();
+
+    if(!result.length) {
+      res.status(400).json({ success: 0, message: 'No visits found' })
+    }
+
+    res.status(200).json({ success: 1, visits: result })
+  });
+
   router.get('/allUserVisits/:userId', async (req, res) => {
     const { userId } = req.params;
 

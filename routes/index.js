@@ -6,6 +6,7 @@ const userVisitsRoute = require('./user_visit');
 const userCarsRoute = require('./user_car');
 const workerRoute = require('./worker');
 const userRoute = require('./user');
+const issueRoute = require('./issue');
 
 module.exports = () => {
   router.use('/auth', authRoute()); 
@@ -13,6 +14,7 @@ module.exports = () => {
   router.use('/userCars', checkToken, userCarsRoute());
   router.use('/workers', checkToken, workerRoute());
   router.use('/users', checkToken, userRoute());
+  router.use('/issue', checkToken, issueRoute());
 
   return router;
 }; 

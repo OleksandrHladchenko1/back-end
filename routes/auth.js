@@ -12,7 +12,7 @@ module.exports = () => {
   router.post('/register', async (req, res) => {
       const { email } = req.body;
       let user = await mySQLService.findUser(email);
-      
+
       if (user) {
         res.status(400).json({ success: 0, message: 'User with this email already exists' });
       } else {
