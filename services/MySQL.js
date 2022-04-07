@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const GET_ISSUES_BY_VISIT_ID = require('../utils/constants');
+const { GET_ISSUES_BY_VISIT_ID } = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -310,6 +310,19 @@ class MySQL {
     }
   }
 
+  getFullFreeWorkersInfo = async () => {
+    await this.connect();
+    const sql = 'SELECT specialist.id AS specialistId, worker.id AS workerId, worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
+                'FROM worker, specialist, speciality ' +
+                'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id AND specialist.isBusy = "No"';
+    try {
+      const result = await this.connection.query(sql);
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   getFullWorkerInfoById = async (id) => {
     await this.connect();
     const sql = 'SELECT worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
@@ -336,18 +349,16 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, ...values);
-      console.log(result);
       return result;
     } catch(err) {
       console.log(err);
     }
   }
 
-  getIssuesByVisitId = async (id) => {
+  getIssuesByVisitId = async (id, status) => {
     await this.connect();
-    console.log(GET_ISSUES_BY_VISIT_ID);
     const sql = GET_ISSUES_BY_VISIT_ID;
-    const values = [id];
+    const values = [id, status];
     try {
       const result = await this.connection.query(sql, values);
       return result[0];
