@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const { GET_ISSUES_BY_VISIT_ID } = require('../utils/constants');
+const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE } = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -355,6 +355,24 @@ class MySQL {
     }
   }
 
+  editSpecialist = async (specialist) => {
+    await this.connect();
+    const sql = EDIT_SPECIALIST;
+    const values = [
+      specialist.isBusy,
+      specialist.startTime,
+      specialist.endTime,
+      specialist.id,
+    ];
+    try {
+      const result = await this.connection.query(sql, values);
+      console.log(result);
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   getIssuesByVisitId = async (id, status) => {
     await this.connect();
     const sql = GET_ISSUES_BY_VISIT_ID;
@@ -362,6 +380,25 @@ class MySQL {
     try {
       const result = await this.connection.query(sql, values);
       return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  addIssue = async (issue) => {
+    await this.connect();
+    const sql = ADD_ISSUE;
+    const values = [[
+      issue.visitId,
+      issue.specialistId,
+      issue.description,
+      issue.startTime,
+      issue.endTime,
+      issue.price,
+    ]];
+    try {
+      const result = await this.connection.query(sql, [values]);
+      return result;
     } catch(err) {
       console.log(err);
     }
