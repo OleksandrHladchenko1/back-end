@@ -27,5 +27,25 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successfully created issue' });
   });
 
+  router.delete('/deleteIssue/:id', async (req, res) => {
+    const result = await mySQLService.deleteIssue(req.params.id);
+
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error deleting issue' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully deleted issue' });
+  });
+
+  router.patch('/closeIssue/:id', async (req, res) => {
+    const result = await mySQLService.closeIssue(req.params.id);
+    
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error closing issue' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully closed issue' });
+  });
+
   return router;
 };

@@ -6,6 +6,7 @@ module.exports = {
     "issues.startTime, " +
     "issues.endTime, " +
     "issues.price, " +
+    "issues.closed, " +
     "specialist.id as specialistId, " +
     "specialist.experience, specialist.isBusy, " +
     "speciality.id as speicalityId, " +
@@ -26,6 +27,10 @@ module.exports = {
     "WHERE id = ?",
   ADD_ISSUE: 
     "INSERT INTO issues " +
-    "(id_user_visit, id_specialist, description, startTime, endTime, price) " +
+    "(id_user_visit, id_specialist, description, startTime, endTime, price, closed) " +
     "VALUES ?",
+  DELETE_ISSUE:
+    "DELETE FROM issues WHERE id = ?",
+  CLOSE_ISSUE:
+    "UPDATE issues SET closed = 'Yes' WHERE id = ?",
 };

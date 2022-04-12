@@ -7,7 +7,7 @@ module.exports = () => {
 
   router.patch('/editSpecialist', async (req, res) => {
     const result = await mySQLService.editSpecialist(req.body);
-    
+    console.log('-----inside-----');
     if(!result) {
       res.status(400).json({ success: 0, message: 'Error editing specialist' });
     }

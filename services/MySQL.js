@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE } = require('../utils/constants');
+const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE, DELETE_ISSUE, CLOSE_ISSUE } = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -395,10 +395,35 @@ class MySQL {
       issue.startTime,
       issue.endTime,
       issue.price,
+      issue.closed,
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
       return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  deleteIssue = async (id) => {
+    await this.connect();
+    const sql = DELETE_ISSUE;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  closeIssue = async (id) => {
+    await this.connect();
+    const sql = CLOSE_ISSUE;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      return result[0].affectedRows;
     } catch(err) {
       console.log(err);
     }
