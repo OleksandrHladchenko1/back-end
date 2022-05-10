@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE, DELETE_ISSUE, CLOSE_ISSUE } = require('../utils/constants');
+const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE, DELETE_ISSUE, CLOSE_ISSUE, GET_WORKER_SPECIALITIES, GET_ALL_SPECIALITIES, ADD_SPECIALIST, DELETE_SPECIALIST } = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -30,6 +30,7 @@ class MySQL {
     const values = [[email]];
     try {
       const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
       return result[0][0];
     } catch(err) {
       console.log(err);
@@ -50,6 +51,7 @@ class MySQL {
     ];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
     } catch(err) {
       console.log(err);
@@ -62,6 +64,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return {
         id: result[0][0].id,
         phoneNumber: result[0][0].phoneNumber,
@@ -93,6 +96,7 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -105,6 +109,7 @@ class MySQL {
     const values = [password, email];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -119,6 +124,7 @@ class MySQL {
 
     try {
       const result = await this.connection.query(sql);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -131,6 +137,7 @@ class MySQL {
     const values = [userId];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -158,6 +165,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -170,6 +178,7 @@ class MySQL {
     const values = [status, id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
     } catch(err) {
       console.log(err);
@@ -182,6 +191,7 @@ class MySQL {
     const values = [userId];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -205,6 +215,7 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -213,17 +224,22 @@ class MySQL {
 
   updateUserCar = async (carId, car) => {
     await this.connect();
-    const sql = 'UPDATE user_car SET model = ?, name = ?, year = ?, carcas = ?, color = ? WHERE id = ?';
+    const sql = 'UPDATE user_car SET model = ?, name = ?, year = ?, carcas = ?, color = ?, engine = ?, number = ?, transmission = ?, engineNumber = ? WHERE id = ?';
     const values = [[
       car.model,
       car.name,
       car.year,
       car.carcas,
       car.color,
+      car.engine,
+      car.number,
+      car.transmission,
+      car.engineNumber,
       carId,
     ]];
     try {
       const result = await this.connection.query(sql, ...values);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -236,6 +252,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
     } catch(err) {
       console.log(err);
@@ -256,6 +273,7 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -268,6 +286,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
     } catch(err) {
       console.log(err);
@@ -276,9 +295,10 @@ class MySQL {
 
   getWorkers = async () => {
     await this.connect();
-    const sql = 'SELECT * FROM worker';
+    const sql = 'SELECT * FROM worker WHERE status = "Worker"';
     try {
       const result = await this.connection.query(sql);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -291,7 +311,34 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0][0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getWorkerInfoById = async (id) => {
+    await this.connect();
+    const sql = 'SELECT email, firstName, lastName, fatherName, phoneNumber FROM worker WHERE id = ?';
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0][0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getWorkerSpecialities = async (id) => {
+    await this.connect();
+    const sql = GET_WORKER_SPECIALITIES;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0];
     } catch(err) {
       console.log(err);
     }
@@ -299,11 +346,12 @@ class MySQL {
 
   getFullWorkersInfo = async () => {
     await this.connect();
-    const sql = 'SELECT worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
+    const sql = 'SELECT worker.firstName, worker.lastName, worker.fatherName, worker.email, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
                 'FROM worker, specialist, speciality ' +
                 'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id';
     try {
       const result = await this.connection.query(sql);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -317,6 +365,7 @@ class MySQL {
                 'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id AND specialist.isBusy = "No"';
     try {
       const result = await this.connection.query(sql);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -331,6 +380,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -339,17 +389,50 @@ class MySQL {
 
   editWorker = async (worker, id) => {
     await this.connect();
-    const sql = 'UPDATE worker SET phoneNumber = ?, firstName = ?, lastName = ?, fatherName = ? WHERE id = ?';
-    const values = [[
+    const sql = 'UPDATE worker SET phoneNumber = ?, firstName = ?, lastName = ?, fatherName = ?, email = ? WHERE id = ?';
+    const values = [
       worker.phoneNumber,
       worker.firstName,
       worker.lastName,
       worker.fatherName,
+      worker.email,
       id,
+    ];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  addSpecialist = async (specialist) => {
+    await this.connect();
+    const sql = ADD_SPECIALIST;
+    const values = [[
+      specialist.id_worker,
+      specialist.id_speciality,
+      specialist.experience,
+      'No'
     ]];
     try {
-      const result = await this.connection.query(sql, ...values);
-      return result;
+      const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  deleteSpecialist = async (id_worker, id_speciality) => {
+    await this.connect();
+    const sql = DELETE_SPECIALIST;
+    const values = [id_worker, id_speciality];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0].affectedRows;
     } catch(err) {
       console.log(err);
     }
@@ -366,7 +449,7 @@ class MySQL {
     ];
     try {
       const result = await this.connection.query(sql, values);
-      console.log(result);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -379,6 +462,7 @@ class MySQL {
     const values = [id, status];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0];
     } catch(err) {
       console.log(err);
@@ -399,6 +483,7 @@ class MySQL {
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
       return result;
     } catch(err) {
       console.log(err);
@@ -411,6 +496,7 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
     } catch(err) {
       console.log(err);
@@ -423,7 +509,20 @@ class MySQL {
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
+      await this.disconnect();
       return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getAllSpecialities = async () => {
+    await this.connect();
+    const sql = GET_ALL_SPECIALITIES;
+    try {
+      const result = await this.connection.query(sql);
+      await this.disconnect();
+      return result[0];
     } catch(err) {
       console.log(err);
     }

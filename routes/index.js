@@ -8,6 +8,7 @@ const workerRoute = require('./worker');
 const userRoute = require('./user');
 const issueRoute = require('./issue');
 const specialistRoute = require('./specialist');
+const specialityRoute = require('./speciality');
 
 module.exports = () => {
   router.use('/auth', authRoute()); 
@@ -17,6 +18,7 @@ module.exports = () => {
   router.use('/users', checkToken, userRoute());
   router.use('/issue', checkToken, issueRoute());
   router.use('/specialist', checkToken, specialistRoute());
+  router.use('/speciality', checkToken, specialityRoute());
 
   return router;
 }; 

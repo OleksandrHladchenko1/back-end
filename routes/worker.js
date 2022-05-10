@@ -7,20 +7,20 @@ module.exports = () => {
   const mySQLService = new MySQLService();
 
   router.post('/createWorker', async (req, res) => {
-      const { email, startStatus, password } = req.body;
-      let worker = await mySQLService.findUser(email, startStatus);
-      
-      if (worker) {
-        res.status(400).json({ success: 0, message: 'User with this email already exists' });
-      } else {
-        const cryptedPassword = await bcrypt.hash(password, 10);
-        const result = await mySQLService.createWorker({ ...req.body, password: cryptedPassword });
+    const { email, startStatus, password } = req.body;
+    let worker = await mySQLService.findUser(email, startStatus);
+  
+    if (worker) {
+      res.status(400).json({ success: 0, message: 'User with this email already exists' });
+    } else {
+      const cryptedPassword = await bcrypt.hash(password, 10);
+      const result = await mySQLService.createWorker({ ...req.body, password: cryptedPassword });
 
-        if(!result) {
-          res.status(400).json({ success: 0, message: 'Error creating workers' });
-        }
-        res.status(200).json({ success: 1,message: 'Worker was succefully created' });
+      if(!result) {
+        res.status(400).json({ success: 0, message: 'Error creating workers' });
       }
+      res.status(200).json({ success: 1,message: 'Worker was succefully created' });
+    }
   });
 
   router.get('/getAllWorkers', async (req, res) => {
@@ -73,6 +73,28 @@ module.exports = () => {
     }
 
     res.status(200).json({ success: 1, worker: result });
+  });
+
+  router.get('/getWorkerInfoById/:workerId', async (req, res) => {
+    const { workerId } = req.params;
+    const result = await mySQLService.getWorkerInfoById(workerId);
+
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error getting workers info by id' });
+    }
+
+    res.status(200).json({ success: 1, worker: result });
+  });
+
+  router.get('/getWorkerSpecialities/:workerId', async (req, res) => {
+    const { workerId } = req.params;
+    const result = await mySQLService.getWorkerSpecialities(workerId);
+    
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error getting workers specialities' });
+    }
+
+    res.status(200).json({ success: 1, specialities: result });
   });
 
   router.patch('/editWorker/:workerId', async (req, res) => {

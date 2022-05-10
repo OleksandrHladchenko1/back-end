@@ -5,10 +5,10 @@ const MySQLService = require('../services/MySQL');
 module.exports = () => {
   const mySQLService = new MySQLService();
 
-  router.get('/allUserCars', async (req, res) => {
-    const { userId } = req.body;
+  router.get('/allUserCars/:id', async (req, res) => {
+    const { id } = req.params;
 
-    const result = await mySQLService.findUserCars(userId);
+    const result = await mySQLService.findUserCars(id);
 
     if(!result.length) {
       res.status(400).json({ success: 0, message: 'No cars found' })
@@ -35,7 +35,7 @@ module.exports = () => {
       res.status(400).json({ success: 0, message: 'Error updating' });
     }
 
-    res.status(200).json({ success: 1, message: 'Successful updated car' });
+    res.status(200).json({ success: 1, message: 'Successfully updated car' });
   });
 
   router.delete('/deleteUserCar/:carId', async (req, res) => {

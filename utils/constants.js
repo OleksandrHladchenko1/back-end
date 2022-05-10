@@ -25,6 +25,12 @@ module.exports = {
     "UPDATE specialist " +
     "SET isBusy = ?, startTime = ?, endTime = ? " +
     "WHERE id = ?",
+  ADD_SPECIALIST: 
+    "INSERT INTO specialist " +
+    "(id_worker, id_speciality, experience, isBusy) " +
+    "VALUES ?",
+  DELETE_SPECIALIST:
+    "DELETE FROM specialist WHERE id_worker = ? AND id_speciality = ?",
   ADD_ISSUE: 
     "INSERT INTO issues " +
     "(id_user_visit, id_specialist, description, startTime, endTime, price, closed) " +
@@ -33,4 +39,11 @@ module.exports = {
     "DELETE FROM issues WHERE id = ?",
   CLOSE_ISSUE:
     "UPDATE issues SET closed = 'Yes' WHERE id = ?",
+  GET_WORKER_SPECIALITIES:
+    "SELECT speciality.id, speciality.name FROM speciality, specialist, worker " +
+    "WHERE worker.id = specialist.id_worker AND " +
+    "specialist.id_speciality = speciality.id AND " +
+    "worker.id = ?",
+  GET_ALL_SPECIALITIES:
+    "SELECT * FROM speciality",
 };
