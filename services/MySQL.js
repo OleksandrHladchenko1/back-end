@@ -1,6 +1,16 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const { GET_ISSUES_BY_VISIT_ID, EDIT_SPECIALIST, ADD_ISSUE, DELETE_ISSUE, CLOSE_ISSUE, GET_WORKER_SPECIALITIES, GET_ALL_SPECIALITIES, ADD_SPECIALIST, DELETE_SPECIALIST } = require('../utils/constants');
+const {
+  GET_ISSUES_BY_VISIT_ID,
+  EDIT_SPECIALIST, ADD_ISSUE,
+  DELETE_ISSUE, CLOSE_ISSUE,
+  GET_WORKER_SPECIALITIES,
+  GET_ALL_SPECIALITIES,
+  ADD_SPECIALIST,
+  DELETE_SPECIALIST,
+  GET_VISIT_BY_ID,
+  GET_FREE_WORKERS_FOR_TIME,
+} = require('../utils/constants');
 
 class MySQL {
   constructor() {
@@ -146,8 +156,8 @@ class MySQL {
 
   createUserVisit = async (userId, visit) => {
     await this.connect();
-    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status, comment) VALUES ?';
-    const values = [[userId, visit.dateOfVisit, 'Planned', visit.comment]];
+    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status, comment, id_car) VALUES ?';
+    const values = [[userId, visit.dateOfVisit, 'Planned', visit.comment, visit.carId]];
     try {
       const result = await this.connection.query(sql, [values]);
       await this.disconnect();
@@ -159,9 +169,7 @@ class MySQL {
 
   getVisitById = async (id) => {
     await this.connect();
-    const sql = 'SELECT user_visit.dateOfVisit, user_visit.status, user.phoneNumber, user.firstName, user.lastName, user.fatherName, user.dateOfBirth, user.discount, user.email ' +
-                'FROM user_visit, user ' +
-                'WHERE user_visit.id_user = user.id AND user_visit.id = ?';
+    const sql = GET_VISIT_BY_ID;
     const values = [id];
     try {
       const result = await this.connection.query(sql, values);
@@ -358,13 +366,25 @@ class MySQL {
     }
   }
 
-  getFullFreeWorkersInfo = async () => {
+  getFullFreeWorkersInfo = async (start, end) => {
     await this.connect();
-    const sql = 'SELECT specialist.id AS specialistId, worker.id AS workerId, worker.firstName, worker.lastName, worker.fatherName, worker.phoneNumber, specialist.experience, specialist.isBusy, speciality.name AS speciality ' +
-                'FROM worker, specialist, speciality ' +
-                'WHERE specialist.id_worker = worker.id AND specialist.id_speciality = speciality.id AND specialist.isBusy = "No"';
+    const sql = GET_FREE_WORKERS_FOR_TIME;
+    const values = [start, end, start, end];
     try {
-      const result = await this.connection.query(sql);
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getFreeWorkerInfoForTime = async (start, end) => {
+    await this.connect();
+    const sql = GET_FREE_WORKERS_FOR_TIME;
+    const values = [start, end];
+    try {
+      const result = await this.connection.query(sql, values);
       await this.disconnect();
       return result[0];
     } catch(err) {

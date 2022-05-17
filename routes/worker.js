@@ -54,8 +54,11 @@ module.exports = () => {
     res.status(200).json({ success: 1, workers: result });
   });
 
-  router.get('/getFullFreeWorkerInfo', async (req, res) => {
-    const result = await mySQLService.getFullFreeWorkersInfo();
+  router.get('/getFullFreeWorkerInfo/:start/:end', async (req, res) => {
+    if(req.params.start === 'null' || req.params.end === 'null') {
+      return res.status(200).json({ success: 1, workers: [] });
+    }
+    const result = await mySQLService.getFullFreeWorkersInfo(req.params.start, req.params.end);
 
     if(!result) {
       res.status(400).json({ success: 0, message: 'Error getting free workers full info' });

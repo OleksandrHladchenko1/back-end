@@ -8,7 +8,7 @@ module.exports = {
     "issues.price, " +
     "issues.closed, " +
     "specialist.id as specialistId, " +
-    "specialist.experience, specialist.isBusy, " +
+    "specialist.experience, " +
     "speciality.id as speicalityId, " +
     "speciality.name, " +
     "worker.id as workerId, " +
@@ -46,4 +46,27 @@ module.exports = {
     "worker.id = ?",
   GET_ALL_SPECIALITIES:
     "SELECT * FROM speciality",
+  GET_VISIT_BY_ID:
+    "SELECT user_visit.dateOfVisit, user_visit.id_car, user_visit.status, " +
+    "user.phoneNumber, user.firstName, user.lastName, user.fatherName, user.dateOfBirth, user.discount, user.email, " +
+    "user_car.name, user_car.model, user_car.color, user_car.year, user_car.carcas, user_car.engine, user_car.number, user_car.transmission, user_car.engineNumber " +
+    "FROM user_visit, user, user_car " +
+    "WHERE user_visit.id_user = user.id AND user_visit.id_car = user_car.id AND user_visit.id = ?",
+  GET_FREE_WORKERS_FOR_TIME:
+    "SELECT " +
+    "specialist.id AS specialistId, " +
+    "worker.id AS workerId, " +
+    "worker.firstName, " +
+    "worker.lastName, " +
+    "worker.fatherName, " +
+    "worker.phoneNumber, " +
+    "specialist.experience, " +
+    "speciality.name AS speciality " +
+    "FROM worker, specialist, speciality WHERE " +
+    "specialist.id NOT IN ( " +
+    "SELECT specialist.id FROM specialist, issues WHERE " +
+    "(DATE(issues.startTime) >= ? AND DATE(issues.startTime) <= ? OR " +
+    "DATE(issues.endTime) >= ? AND DATE(issues.endTime) <= ?) AND issues.id_specialist = specialist.id " +
+    "AND issues.closed != 'Yes') " +
+    "AND worker.id = specialist.id_worker AND specialist.id_speciality = speciality.id",
 };
