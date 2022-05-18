@@ -10,6 +10,7 @@ const issueRoute = require('./issue');
 const specialistRoute = require('./specialist');
 const specialityRoute = require('./speciality');
 const documentRoute = require('./document');
+const statisticsRoute = require('./statistics');
 
 module.exports = () => {
   router.use('/auth', authRoute()); 
@@ -21,6 +22,7 @@ module.exports = () => {
   router.use('/specialist', checkToken, specialistRoute());
   router.use('/speciality', checkToken, specialityRoute());
   router.use('/document', checkToken, documentRoute());
+  router.use('/statistics', checkToken, statisticsRoute());
 
   return router;
 }; 

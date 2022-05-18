@@ -69,4 +69,19 @@ module.exports = {
     "DATE(issues.endTime) >= ? AND DATE(issues.endTime) <= ?) AND issues.id_specialist = specialist.id " +
     "AND issues.closed != 'Yes') " +
     "AND worker.id = specialist.id_worker AND specialist.id_speciality = speciality.id",
+  GET_WORKLOAD:
+    "SELECT " +
+    "SUM(timestampdiff(MINUTE, issues.startTime, issues.endTime)) AS workload, " +
+    "issues.id_specialist, " +
+    "worker.firstName, " +
+    "worker.lastName, " +
+    "worker.fatherName, " +
+    "worker.id, " +
+    "speciality.name " +
+    "FROM issues, specialist, worker, speciality " +
+    "WHERE closed = 'Yes' AND " +
+    "issues.id_specialist = specialist.id AND " +
+    "specialist.id_worker = worker.id AND " +
+    "specialist.id_speciality = speciality.id " +
+    "group by issues.id_specialist",
 };

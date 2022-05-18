@@ -10,6 +10,7 @@ const {
   DELETE_SPECIALIST,
   GET_VISIT_BY_ID,
   GET_FREE_WORKERS_FOR_TIME,
+  GET_WORKLOAD,
 } = require('../utils/constants');
 
 class MySQL {
@@ -539,6 +540,18 @@ class MySQL {
   getAllSpecialities = async () => {
     await this.connect();
     const sql = GET_ALL_SPECIALITIES;
+    try {
+      const result = await this.connection.query(sql);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getWorkload = async () => {
+    await this.connect();
+    const sql = GET_WORKLOAD;
     try {
       const result = await this.connection.query(sql);
       await this.disconnect();
