@@ -52,10 +52,10 @@ module.exports = () => {
     const { email, oldPassword, newPassword1, newPassword2 } = req.body;
 
     if(oldPassword.trim() === '' || newPassword1.trim() === '' || newPassword2.trim() === '') {
-      res.status(400).json({ success: 0, message: 'Please, fill all the fields!' });
+      res.status(400).json({ success: 0, message: 'changePassword.error.requiredFields' });
     }
 
-    const user = await mySQLService.findUser(email);
+    const user = await mySQLService.findUser(email, 'User');
 
     if(!user) {
       res.status(400).json({ success: 0, message: 'User was not found' });
@@ -64,15 +64,15 @@ module.exports = () => {
     const isEqual = await bcrypt.compare(oldPassword, user.password);
 
     if(!isEqual) {
-      res.status(400).json({ success: 0, message: 'Old password doesn`t match' });
+      res.status(400).json({ success: 0, message: 'changePassword.error.oldWrong' });
     }
 
     if(newPassword1 !== newPassword2) {
-      res.status(400).json({ success: 0, message: 'New passwords are not equal' });
+      res.status(400).json({ success: 0, message: 'changePassword.error.newNotEqual' });
     }
 
     if(oldPassword === newPassword1) {
-      res.status(400).json({ success: 0, message: 'Old and new password are equal' });
+      res.status(400).json({ success: 0, message: 'changePassword.error.oldEqualNew' });
     }
 
     const cryptedPassword = await bcrypt.hash(newPassword1, 10);
