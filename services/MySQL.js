@@ -11,6 +11,7 @@ const {
   GET_VISIT_BY_ID,
   GET_FREE_WORKERS_FOR_TIME,
   GET_WORKLOAD,
+  GET_FREE_VISITS,
 } = require('../utils/constants');
 
 class MySQL {
@@ -176,6 +177,19 @@ class MySQL {
       const result = await this.connection.query(sql, values);
       await this.disconnect();
       return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getFreeVisits = async (time) => {
+    await this.connect();
+    const sql = GET_FREE_VISITS;
+    const values = Array(4).fill(time);
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0][0].visitsAmount;
     } catch(err) {
       console.log(err);
     }
@@ -435,7 +449,6 @@ class MySQL {
       specialist.id_worker,
       specialist.id_speciality,
       specialist.experience,
-      'No'
     ]];
     try {
       const result = await this.connection.query(sql, [values]);

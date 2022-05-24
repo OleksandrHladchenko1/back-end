@@ -4,7 +4,7 @@ module.exports = (body) => {
 
   const issues = data.issues.map((visit, i) => `<li><b>${visit.description}</b>, 
     this issue will be fixed by <b>${visit.firstName} ${visit.lastName} ${visit.fatherName}</b>, 
-    who is the <b>${visit.name}</b>, with <b>${visit.experience} year(s)</b>, from <b>${visit.startTime}</b> to <b>${visit.endTime}</b>. 
+    who is the <b>${visit.name}</b>, with <b>${visit.experience} year(s) experience</b>, from <b>${visit.startTime}</b> to <b>${visit.endTime}</b>. 
     <b>It will cost ${visit.price} UAH</b></li>`
   );
 

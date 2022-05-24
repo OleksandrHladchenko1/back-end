@@ -64,5 +64,30 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successfully created visit' });
   });
 
+  router.get('/getFreeVisits/:day', async (req, res) => {
+    const date = new Date();
+    const times = [
+      '08:00', '08:30', '09:00',
+      '09:30', '10:00', '10:30',
+      '11:00', '11:30', '12:00',
+      '12:30', '13:00', '13:30',
+      '14:00', '14:30', '15:00',
+      '15:30', '16:00', '16:30',
+      '17:00',
+    ];
+    const freeTimes = [];
+    for(let i = 0; i < times.length; i++) {
+      const result = await mySQLService.getFreeVisits(`${req.params.day} ${times[i]}:00`);
+      if(result < 2) {
+        freeTimes.push({ time: times[i] });
+      }
+    }
+    if(!freeTimes.length) {
+      res.status(400).json({ success: 0, message: 'No visits found' })
+    }
+
+    res.status(200).json({ success: 1, visit: freeTimes })
+  });
+
   return router;
 };

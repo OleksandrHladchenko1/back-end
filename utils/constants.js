@@ -27,7 +27,7 @@ module.exports = {
     "WHERE id = ?",
   ADD_SPECIALIST: 
     "INSERT INTO specialist " +
-    "(id_worker, id_speciality, experience, isBusy) " +
+    "(id_worker, id_speciality, experience) " +
     "VALUES ?",
   DELETE_SPECIALIST:
     "DELETE FROM specialist WHERE id_worker = ? AND id_speciality = ?",
@@ -84,4 +84,9 @@ module.exports = {
     "specialist.id_worker = worker.id AND " +
     "specialist.id_speciality = speciality.id " +
     "group by issues.id_specialist",
+  GET_FREE_VISITS: 
+    "SELECT COUNT(id) as visitsAmount FROM user_visit WHERE " +
+    "(? >= dateOfVisit AND ? < date_add(dateOfVisit, INTERVAL 1 HOUR) OR " +
+    "date_add(?, INTERVAL 1 HOUR) < date_add(dateOfVisit, INTERVAL 1 HOUR) AND date_add(?, INTERVAL 1 HOUR)  >= dateOfVisit) AND " +
+    "status = 'Planned'",
 };
