@@ -89,5 +89,14 @@ module.exports = () => {
     res.status(200).json({ success: 1, visit: freeTimes })
   });
 
+  router.delete('/deleteVisit/:id', async (req, res) => {
+    const result = await mySQLService.deleteVisit(req.params.id);
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error deleting visit' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully deleted visit' })
+  });
+
   return router;
 };

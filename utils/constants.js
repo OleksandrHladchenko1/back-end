@@ -89,4 +89,8 @@ module.exports = {
     "(? >= dateOfVisit AND ? < date_add(dateOfVisit, INTERVAL 1 HOUR) OR " +
     "date_add(?, INTERVAL 1 HOUR) < date_add(dateOfVisit, INTERVAL 1 HOUR) AND date_add(?, INTERVAL 1 HOUR)  >= dateOfVisit) AND " +
     "status = 'Planned'",
+  DELETE_VISIT: 
+    "DELETE FROM user_visit WHERE id = ?",
+  GET_PROBLEM_TYPES: 
+    "SELECT * FROM problem_type",
 };

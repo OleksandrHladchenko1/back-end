@@ -47,5 +47,15 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successfully closed issue' });
   });
 
+  router.get('/issueTypes', async (req, res) => {
+    const result = await mySQLService.getProblemTypes();
+   
+    if(!result.length) {
+      res.status(200).json({ success: 0, problems: [] });
+    }
+
+    res.status(200).json({ success: 1, problems: result });
+  });
+
   return router;
 };
