@@ -84,6 +84,14 @@ module.exports = {
     "specialist.id_worker = worker.id AND " +
     "specialist.id_speciality = speciality.id " +
     "group by issues.id_specialist",
+  GET_PROBLEM_STATISTICS: 
+  "SELECT " + 
+	"COUNT(specialist.id) as count, " + 
+	"problem_type.name, " + 
+  "problem_type.id " +
+  "FROM specialist, problem_type, issues " + 
+	"WHERE specialist.id_problem_type = problem_type.id AND issues.id_specialist = specialist.id " + 
+	"GROUP BY id_problem_type ",
   GET_FREE_VISITS: 
     "SELECT COUNT(id) as visitsAmount FROM user_visit WHERE " +
     "(? >= dateOfVisit AND ? < date_add(dateOfVisit, INTERVAL 1 HOUR) OR " +

@@ -14,6 +14,7 @@ const {
   GET_FREE_VISITS,
   DELETE_VISIT,
   GET_PROBLEM_TYPES,
+  GET_PROBLEM_STATISTICS,
 } = require('../utils/constants');
 
 class MySQL {
@@ -580,6 +581,18 @@ class MySQL {
   getWorkload = async () => {
     await this.connect();
     const sql = GET_WORKLOAD;
+    try {
+      const result = await this.connection.query(sql);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getProblemStatistics = async () => {
+    await this.connect();
+    const sql = GET_PROBLEM_STATISTICS;
     try {
       const result = await this.connection.query(sql);
       await this.disconnect();
