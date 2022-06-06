@@ -17,6 +17,58 @@ module.exports = () => {
     res.status(200).json({ success: 1, issues: result });
   });
 
+  router.get('/getVisitIssues/:id', async (req, res) => {
+    const { id } = req.params;
+    const result = await mySQLService.getVisitIssuesBeforeSort(id);
+
+    if(!result.length) {
+      res.status(200).json({ success: 0, issues: [] });
+    }
+
+    res.status(200).json({ success: 1, issues: result });
+  });
+
+  router.patch('/updateStartEndSpecialist/:id', async (req, res) => {
+    const result = await mySQLService.updateStartEndSpecialist(req.params.id, req.body);
+
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error editing issue' });
+    }
+
+    res.status(200).json({ success: 1, message: 'Issue was succefully edited' });
+  });
+
+  router.get('/getSortedIssues', async (req, res) => {
+    const result = await mySQLService.getSortedissues();
+
+    if(!result.length) {
+      res.status(200).json({ success: 0, issues: [] });
+    }
+
+    res.status(200).json({ success: 1, issues: result });
+  });
+
+  router.patch('/editDependency/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const result = await mySQLService.setDependency(id, req.body);
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error setting dependency' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully set dependency' });
+  });
+
+  router.patch('/setSequence', async (req, res) => {
+    const array = JSON.parse(JSON.stringify(req.body));
+    const result = await mySQLService.setIssueSequence(array);
+    if(!result) {
+      res.status(200).json({ success: 0, message: 'Error setting sequence' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully set sequence' });
+  });
+
   router.post('/addIssue', async (req, res) => {
     const result = await mySQLService.addIssue(req.body);
 

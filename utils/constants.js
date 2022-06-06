@@ -1,4 +1,6 @@
 module.exports = {
+  GET_VISIT_ISSUES_BEFORE_SORT:
+    "SELECT * FROM issues WHERE id_user_visit = ?",
   GET_ISSUES_BY_VISIT_ID:
     "SELECT " +
     "issues.id as issueId, " +
@@ -33,7 +35,7 @@ module.exports = {
     "DELETE FROM specialist WHERE id_worker = ? AND id_speciality = ?",
   ADD_ISSUE: 
     "INSERT INTO issues " +
-    "(id_user_visit, id_specialist, description, startTime, endTime, price, closed) " +
+    "(id_user_visit, description, price, closed, degree, dependsOn) " +
     "VALUES ?",
   DELETE_ISSUE:
     "DELETE FROM issues WHERE id = ?",
@@ -47,7 +49,7 @@ module.exports = {
   GET_ALL_SPECIALITIES:
     "SELECT * FROM speciality",
   GET_VISIT_BY_ID:
-    "SELECT user_visit.dateOfVisit, user_visit.id_car, user_visit.status, " +
+    "SELECT user_visit.dateOfVisit, user_visit.id_car, user_visit.status, user_visit.isSorted, " +
     "user.phoneNumber, user.firstName, user.lastName, user.fatherName, user.dateOfBirth, user.discount, user.email, " +
     "user_car.name, user_car.model, user_car.color, user_car.year, user_car.carcas, user_car.engine, user_car.number, user_car.transmission, user_car.engineNumber " +
     "FROM user_visit, user, user_car " +
@@ -69,6 +71,22 @@ module.exports = {
     "DATE(issues.endTime) >= ? AND DATE(issues.endTime) <= ?) AND issues.id_specialist = specialist.id " +
     "AND issues.closed != 'Yes') " +
     "AND worker.id = specialist.id_worker AND specialist.id_speciality = speciality.id",
+  GET_FREE_WORKERS_FOR_PROBLEM:
+    "SELECT " +
+    "specialist.id AS specialistId, " +
+    "worker.id AS workerId, " +
+    "worker.firstName, " +
+    "worker.lastName, " +
+    "worker.fatherName, " +
+    "worker.phoneNumber, " +
+    "specialist.experience, " +
+    "problem_type.name, " +
+    "speciality.name AS speciality " +
+    "FROM worker, specialist, speciality, problem_type WHERE " +
+    "problem_type.id = specialist.id_problem_type AND " +
+    "worker.id = specialist.id_worker AND " +
+    "speciality.id = specialist.id_speciality AND " +
+    "id_problem_type = ?",
   GET_WORKLOAD:
     "SELECT " +
     "SUM(timestampdiff(MINUTE, issues.startTime, issues.endTime)) AS workload, " +
@@ -79,7 +97,7 @@ module.exports = {
     "worker.id, " +
     "speciality.name " +
     "FROM issues, specialist, worker, speciality " +
-    "WHERE closed = 'Yes' AND " +
+    "WHERE issues.closed = 'Yes' AND " +
     "issues.id_specialist = specialist.id AND " +
     "specialist.id_worker = worker.id AND " +
     "specialist.id_speciality = speciality.id " +
@@ -101,4 +119,12 @@ module.exports = {
     "DELETE FROM user_visit WHERE id = ?",
   GET_PROBLEM_TYPES: 
     "SELECT * FROM problem_type",
+  UPDATE_DEPENDENCY:
+    "UPDATE issues SET degree = ?, dependsOn = ? WHERE id = ?",
+  GET_SORTED_ISSUES:
+    "SELECT * FROM issues ORDER BY sequence",
+  SET_SORTED:
+    "UPDATE user_visit SET isSorted = 'Yes' WHERE id = ?",
+  UPDATE_START_END_SPECIALIST:
+    "UPDATE issues SET id_specialist = ?, startTime = ?, endTime = ? WHERE id = ?"
 };

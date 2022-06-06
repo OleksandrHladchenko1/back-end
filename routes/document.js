@@ -1,6 +1,4 @@
 const router = require('express').Router();
-const fs = require('fs');
-const { createPDFDoc } = require('../services/createPDF');
 const pdf = require('html-pdf');
 const pdfTemplate = require('../utils/documentTemplate');
 

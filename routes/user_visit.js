@@ -98,5 +98,15 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successfully deleted visit' })
   });
 
+  router.patch('/setSorted/:id', async (req, res) => {
+    const result = await mySQLService.setSorted(req.params.id);
+
+    if(!result) {
+      res.status(400).json({ success: 0, message: 'Error set sorted visit' })
+    }
+
+    res.status(200).json({ success: 1, message: 'Successfully set sorted visit' })
+  });
+
   return router;
 };

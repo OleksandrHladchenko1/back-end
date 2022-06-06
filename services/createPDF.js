@@ -3,7 +3,6 @@ const fs = require('fs');
 
 module.exports = {
   createPDFDoc: (body) => {
-    console.log('inside');
     // Create a document
     const doc = new PDFDocument();
       
@@ -11,8 +10,5 @@ module.exports = {
     doc.pipe(fs.createWriteStream(`${__dirname}/../routes/example.pdf`));
     doc.fontSize(27).text(body, 100, 100);
     doc.end();
-    console.log('end');
-
-
   }
 };

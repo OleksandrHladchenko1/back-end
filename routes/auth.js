@@ -23,29 +23,25 @@ module.exports = () => {
     }
   );
   router.post('/login', async (req, res) => {
-      const { email, password, startStatus } = req.body;
-      const user = await mySQLService.findUser(email, startStatus);
-
-      if (!user) {
-        return res.status(400).json({ success: 0, message: 'User not found' });
-      }
-      const result = await bcrypt.compare(password, user.password);
-
-      if (!result) {
-        return res.status(401).json({ success: 0, message: 'Wrong password' });
-      }
-
-      const token = jwt.sign(
-        { idUser: user.id },
-        'JWT_SECRET', 
-        { expiresIn: '10h' }
-      );
-
-      res.status(200).json({user: {
-          idUser: user.id,
-        },
-        token,
-      });
+    const { email, password, startStatus } = req.body;
+    const user = await mySQLService.findUser(email, startStatus);
+    if (!user) {
+      return res.status(400).json({ success: 0, message: 'User not found' });
+    }
+    const result = await bcrypt.compare(password, user.password);
+    if (!result) {
+      return res.status(401).json({ success: 0, message: 'Wrong password' });
+    }
+    const token = jwt.sign(
+      { idUser: user.id },
+      'JWT_SECRET', 
+      { expiresIn: '2h' }
+    );
+    res.status(200).json({user: {
+        idUser: user.id,
+      },
+      token,
+    });
   });
 
   router.patch('/changePassword', checkToken, async (req, res) => {

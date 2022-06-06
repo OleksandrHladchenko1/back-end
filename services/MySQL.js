@@ -15,6 +15,12 @@ const {
   DELETE_VISIT,
   GET_PROBLEM_TYPES,
   GET_PROBLEM_STATISTICS,
+  GET_VISIT_ISSUES_BEFORE_SORT,
+  UPDATE_DEPENDENCY,
+  GET_SORTED_ISSUES,
+  SET_SORTED,
+  GET_FREE_WORKERS_FOR_PROBLEM,
+  UPDATE_START_END_SPECIALIST,
 } = require('../utils/constants');
 
 class MySQL {
@@ -29,6 +35,7 @@ class MySQL {
       user: 'root',
       password: 'Superalexworld2018',
       database: 'sto',
+      multipleStatements: true,
     });
 
     return this.connection;
@@ -133,7 +140,7 @@ class MySQL {
 
   findAllVisits = async () => {
     await this.connect();
-    const sql = "SELECT user_visit.id, user_visit.id_user, user_visit.dateOfVisit, user_visit.status, user_visit.comment, user.phoneNumber, user.firstName " +
+    const sql = "SELECT user_visit.id, user_visit.id_user, user_visit.dateOfVisit, user_visit.status, user_visit.isSorted, user_visit.comment, user.phoneNumber, user.firstName " +
     "FROM user_visit, user " +
     "WHERE user_visit.id_user = user.id";
 
@@ -161,12 +168,25 @@ class MySQL {
 
   createUserVisit = async (userId, visit) => {
     await this.connect();
-    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status, comment, id_car) VALUES ?';
-    const values = [[userId, visit.dateOfVisit, 'Planned', visit.comment, visit.carId]];
+    const sql = 'INSERT INTO user_visit (id_user, dateOfVisit, status, comment, id_car, isSorted) VALUES ?';
+    const values = [[userId, visit.dateOfVisit, 'Planned', visit.comment, visit.carId, 'No']];
     try {
       const result = await this.connection.query(sql, [values]);
       await this.disconnect();
       return result;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  setSorted = async (id) => {
+    await this.connect();
+    const sql = SET_SORTED;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, [values]);
+      await this.disconnect();
+      return result[0].affectedRows;
     } catch(err) {
       console.log(err);
     }
@@ -397,6 +417,37 @@ class MySQL {
     }
   }
 
+  getFreeWorkersForProblem = async (id) => {
+    await this.connect()
+    const sql = GET_FREE_WORKERS_FOR_PROBLEM;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  updateStartEndSpecialist = async (id, body) => {
+    await this.connect();
+    const sql = UPDATE_START_END_SPECIALIST;
+    const values = [
+      body.idSpecialist,
+      body.start,
+      body.end,
+      id,
+    ];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   getFullFreeWorkersInfo = async (start, end) => {
     await this.connect();
     const sql = GET_FREE_WORKERS_FOR_TIME;
@@ -519,17 +570,70 @@ class MySQL {
     }
   }
 
+  getVisitIssuesBeforeSort = async (id) => {
+    await this.connect();
+    const sql = GET_VISIT_ISSUES_BEFORE_SORT;
+    const values = [id];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  setDependency = async (id, body) => {
+    await this.connect();
+    const sql = UPDATE_DEPENDENCY;
+    const values = [
+      body.degree,
+      body.dependsOn,
+      id,
+    ];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  setIssueSequence = async (array) => {
+    const string = array.map(item => `UPDATE issues set sequence = ${item.sequence} WHERE id = ${item.id}; `).join(' ');
+    await this.connect();
+    try {
+      const result = await this.connection.query(string);
+      await this.disconnect();
+      return result[0].affectedRows;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  getSortedissues = async () => {
+    await this.connect();
+    const sql = GET_SORTED_ISSUES;
+    try {
+      const result = await this.connection.query(sql);
+      await this.disconnect();
+      return result[0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   addIssue = async (issue) => {
     await this.connect();
     const sql = ADD_ISSUE;
     const values = [[
       issue.visitId,
-      issue.specialistId,
       issue.description,
-      issue.startTime,
-      issue.endTime,
       issue.price,
-      issue.closed,
+      'No',
+      issue.degree,
+      issue.dependsOn,
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
