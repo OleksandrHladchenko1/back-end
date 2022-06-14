@@ -16,7 +16,7 @@ module.exports = () => {
   router.use('/auth', authRoute()); 
   router.use('/userVisits', checkToken, userVisitsRoute());
   router.use('/userCars', checkToken, userCarsRoute());
-  router.use('/workers', checkToken, workerRoute());
+  router.use('/workers', workerRoute());
   router.use('/users', checkToken, userRoute());
   router.use('/issue', checkToken, issueRoute());
   router.use('/specialist', checkToken, specialistRoute());

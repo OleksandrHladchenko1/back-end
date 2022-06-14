@@ -23,3 +23,5 @@ const port = process.env.APP_PORT || 8080;
 app.listen(port, () => {
   console.log('Server up and working... on port ', port);
 });
+
+module.exports = app;

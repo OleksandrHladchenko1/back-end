@@ -49,5 +49,16 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Successful deleted car' });
   });
 
+  router.get('/getCount/:id', async (req, res) => {
+    const { id } = req.params;
+    const result = await mySQLService.countUserCars(id);
+
+    if(!result?.carAmount) {
+      res.status(400).json({ success: 0, message: 'No cars found' })
+    }
+
+    res.status(200).json({ success: 1, amount: result })
+  });
+
   return router;
 };

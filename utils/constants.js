@@ -1,6 +1,6 @@
 module.exports = {
   GET_VISIT_ISSUES_BEFORE_SORT:
-    "SELECT * FROM issues WHERE id_user_visit = ?",
+    "SELECT * FROM issues WHERE id_user_visit = ? ORDER BY sequence",
   GET_ISSUES_BY_VISIT_ID:
     "SELECT " +
     "issues.id as issueId, " +
@@ -29,7 +29,7 @@ module.exports = {
     "WHERE id = ?",
   ADD_SPECIALIST: 
     "INSERT INTO specialist " +
-    "(id_worker, id_speciality, experience) " +
+    "(id_worker, id_speciality, experience, id_problem_type) " +
     "VALUES ?",
   DELETE_SPECIALIST:
     "DELETE FROM specialist WHERE id_worker = ? AND id_speciality = ?",
@@ -122,9 +122,11 @@ module.exports = {
   UPDATE_DEPENDENCY:
     "UPDATE issues SET degree = ?, dependsOn = ? WHERE id = ?",
   GET_SORTED_ISSUES:
-    "SELECT * FROM issues ORDER BY sequence",
+    "SELECT * FROM issues WHERE id_user_visit = ? ORDER BY sequence",
   SET_SORTED:
     "UPDATE user_visit SET isSorted = 'Yes' WHERE id = ?",
   UPDATE_START_END_SPECIALIST:
-    "UPDATE issues SET id_specialist = ?, startTime = ?, endTime = ? WHERE id = ?"
+    "UPDATE issues SET id_specialist = ?, startTime = ?, endTime = ? WHERE id = ?",
+  GET_USER_CAR_COUNT:
+    "SELECT COUNT(id) as carAmount FROM user_car WHERE id_user = ? GROUP BY id_user",
 };

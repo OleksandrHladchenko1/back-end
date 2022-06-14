@@ -9,7 +9,7 @@ module.exports = () => {
   router.post('/createWorker', async (req, res) => {
     const { email, startStatus, password } = req.body;
     let worker = await mySQLService.findUser(email, startStatus);
-  
+
     if (worker) {
       res.status(400).json({ success: 0, message: 'User with this email already exists' });
     } else {

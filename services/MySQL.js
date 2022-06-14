@@ -21,6 +21,8 @@ const {
   SET_SORTED,
   GET_FREE_WORKERS_FOR_PROBLEM,
   UPDATE_START_END_SPECIALIST,
+  GET_WORKER_BY_EMAIL,
+  GET_USER_CAR_COUNT,
 } = require('../utils/constants');
 
 class MySQL {
@@ -257,6 +259,19 @@ class MySQL {
     }
   }
 
+  countUserCars = async (userId) => {
+    await this.connect();
+    const sql = GET_USER_CAR_COUNT;
+    const values = [userId];
+    try {
+      const result = await this.connection.query(sql, values);
+      await this.disconnect();
+      return result[0][0];
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   addUserCar = async (car) => {
     await this.connect();
     const sql = 'INSERT INTO user_car (id_user, model, name, year, carcas, color, engine, number, transmission, engineNumber) VALUES ?';
@@ -328,7 +343,7 @@ class MySQL {
       worker.fatherName,
       worker.email,
       worker.password,
-      worker.status,
+      'Worker',
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
@@ -516,6 +531,7 @@ class MySQL {
       specialist.id_worker,
       specialist.id_speciality,
       specialist.experience,
+      specialist.id_problem_type,
     ]];
     try {
       const result = await this.connection.query(sql, [values]);
@@ -612,11 +628,12 @@ class MySQL {
     }
   }
 
-  getSortedissues = async () => {
+  getSortedissues = async (id) => {
     await this.connect();
     const sql = GET_SORTED_ISSUES;
+    const values = [id];
     try {
-      const result = await this.connection.query(sql);
+      const result = await this.connection.query(sql, values);
       await this.disconnect();
       return result[0];
     } catch(err) {

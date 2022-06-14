@@ -38,8 +38,8 @@ module.exports = () => {
     res.status(200).json({ success: 1, message: 'Issue was succefully edited' });
   });
 
-  router.get('/getSortedIssues', async (req, res) => {
-    const result = await mySQLService.getSortedissues();
+  router.get('/getSortedIssues/:id', async (req, res) => {
+    const result = await mySQLService.getSortedissues(req.params.id);
 
     if(!result.length) {
       res.status(200).json({ success: 0, issues: [] });
