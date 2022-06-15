@@ -15,7 +15,6 @@ module.exports = (body) => {
     );
   });
   
-
   const total = data.issues.reduce((sum, current) => sum + +current.price, 0);
   const date = new Date(data.issues[0].startTime);
   const concatDate = `${date.getDate()}.${date.getUTCMonth() + 1 < 10 ? `0${date.getUTCMonth() + 1}` : date.getUTCMonth() + 1}.${date.getFullYear()}р.`;
